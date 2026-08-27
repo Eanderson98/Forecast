@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/nocturne-5cac5356-c937-45f6-8893-b278899ab17d/styles.css">
+<script src="_ds/nocturne-5cac5356-c937-45f6-8893-b278899ab17d/_ds_bundle.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<style>
+  body { margin: 0; background: #0f1119; }
+  .cd-i { font-size: 16px; line-height: 1; }
+</style>
+</helmet>
+
+<div style="padding:56px;display:flex;flex-direction:column;gap:64px;background:#0f1119;font-family:var(--font-body);color:var(--color-text)">
+
+<section style="display:flex;flex-direction:column;gap:14px">
+  <div style="display:flex;align-items:baseline;gap:12px">
+    <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);border:1px solid var(--color-accent);border-radius:6px;padding:2px 8px">01</span>
+    <h4 style="margin:0">Board — grouped table</h4>
+    <span style="font-size:13px;color:color-mix(in srgb, var(--color-text) 50%, transparent)">the default working surface: rows grouped, everything editable in place</span>
+  </div>
+
+  <div style="width:1440px;height:1030px;background:var(--color-bg);border-radius:14px;box-shadow:var(--shadow-md);overflow:hidden;display:flex">
+    <aside style="width:224px;flex:none;background:#12141f;display:flex;flex-direction:column;padding:18px 12px;gap:20px">
+      <div style="display:flex;align-items:center;gap:9px;padding:0 8px">
+        <span style="width:22px;height:22px;border-radius:6px;border:1px solid var(--color-accent);display:grid;place-items:center;color:var(--color-accent);font-size:12px">C</span>
+        <span style="font-family:var(--font-heading);font-weight:500;font-size:17px">{{ brand }}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:14px;color:var(--color-accent);background:color-mix(in srgb, var(--color-accent) 12%, transparent)"><i class="ph ph-rows cd-i"></i>Boards</div>
+        <div style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:14px;color:color-mix(in srgb, var(--color-text) 72%, transparent)"><i class="ph ph-user-focus cd-i"></i>My work</div>
+        <div style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:14px;color:color-mix(in srgb, var(--color-text) 72%, transparent)"><i class="ph ph-calendar-blank cd-i"></i>Calendar</div>
+        <div style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:14px;color:color-mix(in srgb, var(--color-text) 72%, transparent)"><i class="ph ph-tray cd-i"></i>Updates<span style="margin-left:auto;font-size:11px;color:var(--color-accent)">7</span></div>
+        <div style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:14px;color:color-mix(in srgb, var(--color-text) 72%, transparent)"><i class="ph ph-chart-bar cd-i"></i>Dashboard</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 45%, transparent);padding:0 10px">Workspaces</div>
+        <sc-for list="{{ spaces }}" as="sp" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;gap:9px;padding:6px 10px;border-radius:8px;font-size:13px;color:color-mix(in srgb, var(--color-text) 78%, transparent)"><span style="width:6px;height:6px;border-radius:50%;background:var(--color-accent-500)"></span>{{ sp.name }}</div>
+        </sc-for>
+      </div>
+      <div style="margin-top:auto;display:flex;flex-direction:column;gap:10px;padding:12px 10px;border-radius:10px;background:color-mix(in srgb, var(--color-text) 4%, transparent)">
+        <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--color-accent)"><i class="ph ph-users-three cd-i"></i>3 client guests</div>
+        <div style="font-size:11px;color:color-mix(in srgb, var(--color-text) 50%, transparent);line-height:1.4">Guests see only the boards you share with them.</div>
+      </div>
+    </aside>
+
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <header style="display:flex;align-items:center;gap:14px;padding:14px 20px">
+        <div style="display:flex;flex-direction:column;gap:2px;margin-right:auto">
+          <div style="font-size:11px;color:color-mix(in srgb, var(--color-text) 45%, transparent)">Creative Studio / Campaigns</div>
+          <div style="display:flex;align-items:center;gap:8px"><span style="font-family:var(--font-heading);font-size:20px">Q3 Launch — Northwind</span><i class="ph ph-star cd-i" style="color:color-mix(in srgb, var(--color-text) 40%, transparent)"></i></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;border:1px solid var(--color-divider);width:230px;color:color-mix(in srgb, var(--color-text) 45%, transparent);font-size:13px"><i class="ph ph-magnifying-glass cd-i"></i>Search tasks</div>
+        <div style="display:flex;align-items:center">
+          <span style="width:28px;height:28px;border-radius:50%;background:var(--color-accent-800);color:var(--color-accent-100);display:grid;place-items:center;font-size:11px;box-shadow:0 0 0 2px var(--color-bg)">MK</span>
+          <span style="width:28px;height:28px;border-radius:50%;background:var(--color-neutral-800);color:var(--color-neutral-100);display:grid;place-items:center;font-size:11px;margin-left:-8px;box-shadow:0 0 0 2px var(--color-bg)">RL</span>
+          <span style="width:28px;height:28px;border-radius:50%;background:var(--color-accent-2-800);color:var(--color-accent-2-100);display:grid;place-items:center;font-size:11px;margin-left:-8px;box-shadow:0 0 0 2px var(--color-bg)">JP</span>
+          <span style="width:28px;height:28px;border-radius:50%;border:1px solid var(--color-divider);color:color-mix(in srgb, var(--color-text) 60%, transparent);display:grid;place-items:center;font-size:11px;margin-left:-8px;background:var(--color-bg)">+5</span>
+        </div>
+        <button class="btn btn-secondary"><i class="ph ph-bell cd-i"></i></button>
+        <button class="btn btn-primary"><i class="ph ph-user-plus cd-i"></i>Invite</button>
+      </header>
+
+      <div style="display:flex;align-items:center;gap:18px;padding:0 20px 10px">
+        <div style="display:flex;align-items:center;gap:16px;font-size:14px">
+          <span style="color:var(--color-accent);padding-bottom:8px;box-shadow:inset 0 -2px 0 var(--color-accent)">Table</span>
+          <span style="color:color-mix(in srgb, var(--color-text) 60%, transparent);padding-bottom:8px">Kanban</span>
+          <span style="color:color-mix(in srgb, var(--color-text) 60%, transparent);padding-bottom:8px">Calendar</span>
+          <span style="color:color-mix(in srgb, var(--color-text) 60%, transparent);padding-bottom:8px">Timeline</span>
+          <span style="color:color-mix(in srgb, var(--color-text) 35%, transparent);padding-bottom:8px">+</span>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <button class="btn btn-secondary"><i class="ph ph-funnel cd-i"></i>Filter</button>
+          <button class="btn btn-secondary"><i class="ph ph-users cd-i"></i>Person</button>
+          <button class="btn btn-secondary"><i class="ph ph-stack cd-i"></i>{{ groupByLabel }}</button>
+          <button class="btn btn-primary"><i class="ph ph-plus cd-i"></i>New task</button>
+        </div>
+      </div>
+      <div style="height:1px;background:linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent)"></div>
+
+      <div style="flex:1;display:flex;min-height:0">
+        <div style="flex:1;min-width:0;overflow:hidden;padding:16px 20px;display:flex;flex-direction:column;gap:22px">
+          <sc-for list="{{ groups }}" as="g" hint-placeholder-count="2">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <i class="ph ph-caret-down cd-i" style="color:var(--color-accent);font-size:13px"></i>
+                <span style="font-family:var(--font-heading);font-size:15px;color:var(--color-accent);white-space:nowrap">{{ g.name }}</span>
+                <span style="font-size:11px;color:color-mix(in srgb, var(--color-text) 45%, transparent)">{{ g.count }} tasks</span>
+                <span style="margin-left:auto;font-size:11px;white-space:nowrap;color:color-mix(in srgb, var(--color-text) 45%, transparent)">{{ g.range }}</span>
+              </div>
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) 172px 104px 128px 132px 76px;align-items:center;gap:0;padding:0 10px;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 50%, transparent)">
+                <span>Task</span><span>Timeline</span><span>Priority</span><span>Label</span><span>Assigned</span><span style="text-align:right">Notes</span>
+              </div>
+              <div style="border-radius:10px;background:var(--color-surface);box-shadow:var(--shadow-sm);overflow:hidden">
+                <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="4">
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) 172px 104px 128px 132px 76px;align-items:center;gap:0;padding:9px 10px;border-bottom:1px solid color-mix(in srgb, var(--color-text) 8%, transparent)">
+                    <div style="display:flex;align-items:center;gap:9px;min-width:0">
+                      <span style="width:14px;height:14px;border-radius:4px;border:1px solid var(--color-divider);flex:none"></span>
+                      <span style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.task }}</span>
+                      <sc-if value="{{ r.files }}" hint-placeholder-val="{{ true }}">
+                        <span style="display:inline-flex;align-items:center;gap:3px;font-size:11px;color:color-mix(in srgb, var(--color-text) 45%, transparent);flex:none"><i class="ph ph-paperclip cd-i" style="font-size:12px"></i>{{ r.files }}</span>
+                      </sc-if>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:7px;white-space:nowrap;font-size:12px;color:color-mix(in srgb, var(--color-text) 70%, transparent)">
+                      <span style="width:52px;height:5px;border-radius:3px;background:var(--color-accent-800);overflow:hidden"><span style="display:block;height:100%;width:60%;background:var(--color-accent-500)"></span></span>
+                      {{ r.dates }}
+                    </div>
+                    <div><span class="tag {{ r.prioClass }}">{{ r.prio }}</span></div>
+                    <div><span class="tag {{ r.labelClass }}">{{ r.label }}</span></div>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <span style="width:24px;height:24px;border-radius:50%;background:var(--color-neutral-800);color:var(--color-neutral-100);display:grid;place-items:center;font-size:10px">{{ r.initials }}</span>
+                      <span style="font-size:12px;white-space:nowrap;color:color-mix(in srgb, var(--color-text) 65%, transparent)">{{ r.who }}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;justify-content:flex-end;gap:5px;font-size:12px;color:color-mix(in srgb, var(--color-text) 50%, transparent)"><i class="ph ph-chat-circle cd-i" style="font-size:14px"></i>{{ r.notes }}</div>
+                  </div>
+                </sc-for>
+                <div style="display:flex;align-items:center;gap:9px;padding:9px 10px;font-size:13px;color:color-mix(in srgb, var(--color-text) 40%, transparent)"><i class="ph ph-plus cd-i" style="font-size:13px"></i>Add task</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <aside style="width:344px;flex:none;background:#12141f;padding:18px;display:flex;flex-direction:column;gap:14px;overflow:hidden">
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <div style="flex:1">
+              <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);margin-bottom:4px">Task</div>
+              <div style="font-family:var(--font-heading);font-size:19px;line-height:1.2">Hero film — client cut v3</div>
+            </div>
+            <i class="ph ph-x cd-i" style="color:color-mix(in srgb, var(--color-text) 45%, transparent)"></i>
+          </div>
+          <div style="display:grid;grid-template-columns:78px 1fr;gap:8px 10px;font-size:13px;align-items:center">
+            <span style="color:color-mix(in srgb, var(--color-text) 50%, transparent);font-size:12px">Timeline</span>
+            <span>Aug 18 → Aug 29</span>
+            <span style="color:color-mix(in srgb, var(--color-text) 50%, transparent);font-size:12px">Priority</span>
+            <span><span class="tag tag-outline">Critical</span></span>
+            <span style="color:color-mix(in srgb, var(--color-text) 50%, transparent);font-size:12px">Label</span>
+            <span><span class="tag tag-accent">In review</span></span>
+            <span style="color:color-mix(in srgb, var(--color-text) 50%, transparent);font-size:12px">Assigned</span>
+            <span style="display:flex;align-items:center;gap:6px"><span style="width:22px;height:22px;border-radius:50%;background:var(--color-accent-800);color:var(--color-accent-100);display:grid;place-items:center;font-size:10px">MK</span>Mira Kovac</span>
+          </div>
+          <div style="height:1px;background:var(--color-divider);opacity:0.6"></div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 50%, transparent)">Files</div>
+            <div style="display:flex;gap:8px">
+              <div style="width:84px;height:60px;border-radius:8px;background:var(--color-neutral-900);box-shadow:var(--shadow-sm);display:grid;place-items:center;color:color-mix(in srgb, var(--color-text) 40%, transparent)"><i class="ph ph-film-strip" style="font-size:20px"></i></div>
+              <div style="width:84px;height:60px;border-radius:8px;background:var(--color-neutral-900);box-shadow:var(--shadow-sm);display:grid;place-items:center;color:color-mix(in srgb, var(--color-text) 40%, transparent)"><i class="ph ph-image" style="font-size:20px"></i></div>
+              <div style="width:84px;height:60px;border-radius:8px;border:1px dashed var(--color-divider);display:grid;place-items:center;color:color-mix(in srgb, var(--color-text) 35%, transparent);font-size:11px">Drop</div>
+            </div>
+          </div>
+          <div style="height:1px;background:var(--color-divider);opacity:0.6"></div>
+          <div style="display:flex;flex-direction:column;gap:12px;flex:1;min-height:0">
+            <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 50%, transparent)">Updates</div>
+            <sc-for list="{{ thread }}" as="t" hint-placeholder-count="3">
+              <div style="display:flex;gap:9px">
+                <span style="width:26px;height:26px;flex:none;border-radius:50%;background:var(--color-neutral-800);color:var(--color-neutral-100);display:grid;place-items:center;font-size:10px">{{ t.initials }}</span>
+                <div style="display:flex;flex-direction:column;gap:3px">
+                  <div style="font-size:12px;color:color-mix(in srgb, var(--color-text) 55%, transparent)">{{ t.who }} · {{ t.when }}</div>
+                  <div style="font-size:13px;line-height:1.45">{{ t.body }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;border:1px solid var(--color-divider);font-size:13px;color:color-mix(in srgb, var(--color-text) 40%, transparent)">
+            Write an update — @ to mention
+            <i class="ph ph-paperclip cd-i" style="margin-left:auto"></i>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:14px">
+  <div style="display:flex;align-items:baseline;gap:12px">
+    <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);border:1px solid var(--color-accent);border-radius:6px;padding:2px 8px">02</span>
+    <h4 style="margin:0">Kanban</h4>
+    <span style="font-size:13px;color:color-mix(in srgb, var(--color-text) 50%, transparent)">same tasks, moved by stage — for approvals and hand-offs</span>
+  </div>
+
+  <div style="width:1440px;height:640px;background:var(--color-bg);border-radius:14px;box-shadow:var(--shadow-md);overflow:hidden;display:flex;flex-direction:column">
+    <header style="display:flex;align-items:center;gap:14px;padding:14px 20px">
+      <div style="display:flex;flex-direction:column;gap:2px;margin-right:auto">
+        <div style="font-size:11px;color:color-mix(in srgb, var(--color-text) 45%, transparent)">Creative Studio / Campaigns</div>
+        <div style="font-family:var(--font-heading);font-size:20px">Q3 Launch — Northwind</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;font-size:14px;margin-right:auto">
+        <span style="color:color-mix(in srgb, var(--color-text) 60%, transparent)">Table</span>
+        <span style="color:var(--color-accent);padding-bottom:6px;box-shadow:inset 0 -2px 0 var(--color-accent)">Kanban</span>
+        <span style="color:color-mix(in srgb, var(--color-text) 60%, transparent)">Calendar</span>
+        <span style="color:color-mix(in srgb, var(--color-text) 60%, transparent)">Timeline</span>
+      </div>
+      <button class="btn btn-secondary"><i class="ph ph-funnel cd-i"></i>Filter</button>
+      <button class="btn btn-primary"><i class="ph ph-plus cd-i"></i>New task</button>
+    </header>
+    <div style="height:1px;background:linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent)"></div>
+
+    <div style="flex:1;min-height:0;padding:18px 20px;display:grid;grid-template-columns:repeat(5, minmax(0,1fr));gap:14px">
+      <sc-for list="{{ columns }}" as="c" hint-placeholder-count="5">
+        <div style="display:flex;flex-direction:column;gap:10px;min-height:0">
+          <div style="display:flex;align-items:center;gap:8px;padding:0 2px">
+            <span style="width:7px;height:7px;border-radius:50%;background:var(--color-accent-500)"></span>
+            <span style="font-family:var(--font-heading);font-size:14px">{{ c.name }}</span>
+            <span style="font-size:11px;color:color-mix(in srgb, var(--color-text) 45%, transparent)">{{ c.count }}</span>
+            <i class="ph ph-plus cd-i" style="margin-left:auto;font-size:13px;color:color-mix(in srgb, var(--color-text) 40%, transparent)"></i>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ c.cards }}" as="k" hint-placeholder-count="3">
+              <div class="card elev-sm" style="gap:8px;padding:12px">
+                <div style="display:flex;align-items:center;gap:6px">
+                  <span class="tag {{ k.labelClass }}">{{ k.label }}</span>
+                  <sc-if value="{{ k.flag }}" hint-placeholder-val="{{ true }}">
+                    <span class="tag tag-outline">{{ k.flag }}</span>
+                  </sc-if>
+                </div>
+                <div style="font-family:var(--font-heading);font-size:14px;line-height:1.25">{{ k.title }}</div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:11px;color:color-mix(in srgb, var(--color-text) 50%, transparent)">
+                  <span style="display:inline-flex;align-items:center;gap:4px"><i class="ph ph-calendar-blank cd-i" style="font-size:13px"></i>{{ k.due }}</span>
+                  <span style="display:inline-flex;align-items:center;gap:4px"><i class="ph ph-chat-circle cd-i" style="font-size:13px"></i>{{ k.notes }}</span>
+                  <span style="display:inline-flex;align-items:center;gap:4px"><i class="ph ph-paperclip cd-i" style="font-size:13px"></i>{{ k.files }}</span>
+                  <span style="margin-left:auto;width:22px;height:22px;border-radius:50%;background:var(--color-neutral-800);color:var(--color-neutral-100);display:grid;place-items:center;font-size:10px">{{ k.initials }}</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:14px">
+  <div style="display:flex;align-items:baseline;gap:12px">
+    <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);border:1px solid var(--color-accent);border-radius:6px;padding:2px 8px">03</span>
+    <h4 style="margin:0">Calendar + light timeline</h4>
+    <span style="font-size:13px;color:color-mix(in srgb, var(--color-text) 50%, transparent)">dates and overlaps — no dependency arrows, no critical path</span>
+  </div>
+
+  <div style="width:1440px;height:940px;background:var(--color-bg);border-radius:14px;box-shadow:var(--shadow-md);overflow:hidden;display:flex;flex-direction:column">
+    <header style="display:flex;align-items:center;gap:14px;padding:14px 20px">
+      <div style="font-family:var(--font-heading);font-size:20px;margin-right:auto">August 2026</div>
+      <div style="display:flex;align-items:center;gap:16px;font-size:14px;margin-right:auto">
+        <span style="color:color-mix(in srgb, var(--color-text) 60%, transparent)">Table</span>
+        <span style="color:color-mix(in srgb, var(--color-text) 60%, transparent)">Kanban</span>
+        <span style="color:var(--color-accent);padding-bottom:6px;box-shadow:inset 0 -2px 0 var(--color-accent)">Calendar</span>
+        <span style="color:color-mix(in srgb, var(--color-text) 60%, transparent)">Timeline</span>
+      </div>
+      <button class="btn btn-secondary"><i class="ph ph-caret-left cd-i"></i></button>
+      <button class="btn btn-secondary">Today</button>
+      <button class="btn btn-secondary"><i class="ph ph-caret-right cd-i"></i></button>
+      <button class="btn btn-primary"><i class="ph ph-plus cd-i"></i>New task</button>
+    </header>
+    <div style="height:1px;background:linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent)"></div>
+
+    <div style="padding:16px 20px 0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 45%, transparent)">
+      <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+    </div>
+    <div style="padding:8px 20px 16px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-auto-rows:104px;gap:8px">
+      <sc-for list="{{ days }}" as="d" hint-placeholder-count="28">
+        <div style="border-radius:8px;background:var(--color-surface);box-shadow:var(--shadow-sm);padding:7px;display:flex;flex-direction:column;gap:5px;overflow:hidden">
+          <span style="font-size:11px;color:color-mix(in srgb, var(--color-text) 50%, transparent)">{{ d.n }}</span>
+          <sc-for list="{{ d.events }}" as="e" hint-placeholder-count="1">
+            <span style="font-size:11px;line-height:1.25;padding:3px 6px;border-radius:5px;background:var(--color-accent-900);color:var(--color-accent-200);border-left:2px solid var(--color-accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e }}</span>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="padding:4px 20px 0;display:flex;align-items:center;gap:10px">
+      <span style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 50%, transparent)">Timeline</span>
+      <span style="font-size:11px;color:color-mix(in srgb, var(--color-text) 40%, transparent)">six weeks · campaign level</span>
+    </div>
+    <div style="padding:10px 20px 20px;display:flex;flex-direction:column;gap:7px">
+      <div style="display:grid;grid-template-columns:190px repeat(6,minmax(0,1fr));gap:0;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 45%, transparent)">
+        <span></span><span>W31</span><span>W32</span><span>W33</span><span>W34</span><span>W35</span><span>W36</span>
+      </div>
+      <div style="display:grid;grid-template-columns:190px repeat(6,minmax(0,1fr));align-items:center;gap:0;padding:5px 0;border-top:1px solid color-mix(in srgb, var(--color-text) 8%, transparent)">
+        <span style="font-size:13px">Concepting</span>
+        <span style="grid-column:2 / span 2;height:16px;border-radius:8px;background:var(--color-accent-700);margin-right:6px"></span>
+      </div>
+      <div style="display:grid;grid-template-columns:190px repeat(6,minmax(0,1fr));align-items:center;gap:0;padding:5px 0;border-top:1px solid color-mix(in srgb, var(--color-text) 8%, transparent)">
+        <span style="font-size:13px">Shoot + edit</span>
+        <span style="grid-column:3 / span 3;height:16px;border-radius:8px;background:var(--color-accent-500);margin-right:6px"></span>
+      </div>
+      <div style="display:grid;grid-template-columns:190px repeat(6,minmax(0,1fr));align-items:center;gap:0;padding:5px 0;border-top:1px solid color-mix(in srgb, var(--color-text) 8%, transparent)">
+        <span style="font-size:13px">Client approvals</span>
+        <span style="grid-column:5 / span 2;height:16px;border-radius:8px;background:var(--color-accent-2-600);margin-right:6px"></span>
+      </div>
+      <div style="display:grid;grid-template-columns:190px repeat(6,minmax(0,1fr));align-items:center;gap:0;padding:5px 0;border-top:1px solid color-mix(in srgb, var(--color-text) 8%, transparent)">
+        <span style="font-size:13px">Print production</span>
+        <span style="grid-column:6 / span 2;height:16px;border-radius:8px;background:var(--color-neutral-700);margin-right:6px"></span>
+      </div>
+      <div style="display:grid;grid-template-columns:190px repeat(6,minmax(0,1fr));align-items:center;gap:0;padding:5px 0;border-top:1px solid color-mix(in srgb, var(--color-text) 8%, transparent)">
+        <span style="font-size:13px">Launch week</span>
+        <span style="grid-column:7 / span 1;height:16px;border-radius:8px;border:1px solid var(--color-accent);margin-right:6px"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:14px">
+  <div style="display:flex;align-items:baseline;gap:12px">
+    <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent);border:1px solid var(--color-accent);border-radius:6px;padding:2px 8px">04</span>
+    <h4 style="margin:0">My work, workload &amp; updates</h4>
+    <span style="font-size:13px;color:color-mix(in srgb, var(--color-text) 50%, transparent)">the daily landing screen: what's mine, who's overloaded, what changed</span>
+  </div>
+
+  <div style="width:1440px;height:900px;background:var(--color-bg);border-radius:14px;box-shadow:var(--shadow-md);overflow:hidden;display:flex;flex-direction:column">
+    <header style="display:flex;align-items:center;gap:14px;padding:14px 20px">
+      <div style="display:flex;flex-direction:column;gap:2px;margin-right:auto">
+        <div style="font-size:11px;color:color-mix(in srgb, var(--color-text) 45%, transparent)">Monday, 24 August</div>
+        <div style="font-family:var(--font-heading);font-size:20px">Good morning, Mira</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;border:1px solid var(--color-divider);width:230px;color:color-mix(in srgb, var(--color-text) 45%, transparent);font-size:13px"><i class="ph ph-magnifying-glass cd-i"></i>Search everything</div>
+      <button class="btn btn-secondary"><i class="ph ph-bell cd-i"></i>7</button>
+      <button class="btn btn-primary"><i class="ph ph-plus cd-i"></i>New task</button>
+    </header>
+    <div style="height:1px;background:linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent)"></div>
+
+    <div style="flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 372px">
+      <div style="padding:18px 20px;display:flex;flex-direction:column;gap:18px;min-width:0">
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px">
+          <sc-for list="{{ metrics }}" as="m" hint-placeholder-count="4">
+            <div class="card elev-sm" style="gap:4px;padding:14px">
+              <span class="card-kicker">{{ m.k }}</span>
+              <span style="font-family:var(--font-heading);font-size:30px;line-height:1.05">{{ m.v }}</span>
+              <span style="font-size:11px;color:color-mix(in srgb, var(--color-text) 50%, transparent)">{{ m.sub }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;min-height:0">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-family:var(--font-heading);font-size:16px">My work</span>
+            <div class="seg" style="margin-left:auto">
+              <span class="seg-opt" style="color:var(--color-accent);box-shadow:inset 0 0 0 1px var(--color-accent)">Today</span>
+              <span class="seg-opt">This week</span>
+              <span class="seg-opt">Later</span>
+            </div>
+          </div>
+          <div style="border-radius:10px;background:var(--color-surface);box-shadow:var(--shadow-sm);overflow:hidden">
+            <sc-for list="{{ mine }}" as="t" hint-placeholder-count="6">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) 190px 116px 104px;align-items:center;gap:0;padding:10px 12px;border-bottom:1px solid color-mix(in srgb, var(--color-text) 8%, transparent)">
+                <div style="display:flex;align-items:center;gap:9px;min-width:0">
+                  <span style="width:14px;height:14px;border-radius:4px;border:1px solid var(--color-divider);flex:none"></span>
+                  <span style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.task }}</span>
+                </div>
+                <span style="font-size:12px;color:color-mix(in srgb, var(--color-text) 55%, transparent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.board }}</span>
+                <span><span class="tag {{ t.labelClass }}">{{ t.label }}</span></span>
+                <span style="font-size:12px;color:color-mix(in srgb, var(--color-text) 65%, transparent);text-align:right">{{ t.due }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <span style="font-family:var(--font-heading);font-size:16px">Workload this week</span>
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <sc-for list="{{ workload }}" as="w" hint-placeholder-count="5">
+              <div style="display:grid;grid-template-columns:186px minmax(0,1fr) 78px;align-items:center;gap:12px">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="width:24px;height:24px;border-radius:50%;background:var(--color-neutral-800);color:var(--color-neutral-100);display:grid;place-items:center;font-size:10px">{{ w.initials }}</span>
+                  <span style="font-size:13px;white-space:nowrap">{{ w.who }}</span>
+                </div>
+                <div style="height:10px;border-radius:5px;background:color-mix(in srgb, var(--color-text) 8%, transparent);overflow:hidden;display:flex">
+                  <span style="height:100%;background:var(--color-accent-500);width:{{ w.pct }}"></span>
+                </div>
+                <span style="font-size:12px;color:color-mix(in srgb, var(--color-text) 55%, transparent);text-align:right">{{ w.hours }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <aside style="background:#12141f;padding:18px;display:flex;flex-direction:column;gap:12px;min-height:0;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-family:var(--font-heading);font-size:16px">Updates</span>
+          <span class="tag tag-accent">7 new</span>
+          <i class="ph ph-sliders-horizontal cd-i" style="margin-left:auto;color:color-mix(in srgb, var(--color-text) 45%, transparent)"></i>
+        </div>
+        <sc-for list="{{ inbox }}" as="u" hint-placeholder-count="6">
+          <div style="display:flex;gap:10px;padding:10px;border-radius:10px;background:color-mix(in srgb, var(--color-text) 4%, transparent)">
+            <span style="width:28px;height:28px;flex:none;border-radius:50%;background:var(--color-accent-800);color:var(--color-accent-100);display:grid;place-items:center;font-size:10px">{{ u.initials }}</span>
+            <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+              <div style="font-size:12px;color:color-mix(in srgb, var(--color-text) 55%, transparent)">{{ u.who }} · {{ u.when }}</div>
+              <div style="font-size:13px;line-height:1.4">{{ u.body }}</div>
+              <div style="font-size:11px;color:var(--color-accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ u.where }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </aside>
+    </div>
+  </div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;brand&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Cadence&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Product&quot;},&quot;grouping&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Campaign&quot;,&quot;Client&quot;,&quot;Status&quot;],&quot;default&quot;:&quot;Campaign&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Board&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const grouping = this.props.grouping ?? "Campaign";
+    const brand = this.props.brand ?? "Cadence";
+
+    const byCampaign = [
+      { name: "Concepting & scripts", count: 5, range: "Aug 3 – Aug 14", rows: [
+        { task: "Territory deck — three routes", dates: "Aug 3 – Aug 7", prio: "High", prioClass: "tag-accent-2", label: "Approved", labelClass: "tag-neutral", who: "Jonas P.", initials: "JP", notes: 4, files: 2 },
+        { task: "Hero film script — final pass", dates: "Aug 6 – Aug 11", prio: "High", prioClass: "tag-accent-2", label: "Approved", labelClass: "tag-neutral", who: "Mira K.", initials: "MK", notes: 9, files: 1 },
+        { task: "Tone of voice guardrails", dates: "Aug 8 – Aug 12", prio: "Medium", prioClass: "tag-neutral", label: "Done", labelClass: "tag-neutral", who: "Rae L.", initials: "RL", notes: 2, files: 0 },
+        { task: "Media plan v1 with Northwind", dates: "Aug 10 – Aug 14", prio: "Medium", prioClass: "tag-neutral", label: "In review", labelClass: "tag-accent", who: "Sam O.", initials: "SO", notes: 6, files: 3 }
+      ]},
+      { name: "Production", count: 6, range: "Aug 17 – Sep 4", rows: [
+        { task: "Hero film — client cut v3", dates: "Aug 18 – Aug 29", prio: "Critical", prioClass: "tag-outline", label: "In review", labelClass: "tag-accent", who: "Mira K.", initials: "MK", notes: 12, files: 5 },
+        { task: "Stills retouch — 40 selects", dates: "Aug 19 – Aug 26", prio: "High", prioClass: "tag-accent-2", label: "Working", labelClass: "tag-accent", who: "Rae L.", initials: "RL", notes: 3, files: 8 },
+        { task: "OOH artwork — 6 sheet + 48 sheet", dates: "Aug 21 – Sep 1", prio: "High", prioClass: "tag-accent-2", label: "Working", labelClass: "tag-accent", who: "Jonas P.", initials: "JP", notes: 5, files: 4 },
+        { task: "Print spec sign-off with vendor", dates: "Aug 25 – Sep 2", prio: "Medium", prioClass: "tag-neutral", label: "Blocked", labelClass: "tag-outline", who: "Dana W.", initials: "DW", notes: 7, files: 1 },
+        { task: "Social cutdowns — 9:16, 1:1", dates: "Aug 27 – Sep 4", prio: "Low", prioClass: "tag-neutral", label: "Not started", labelClass: "tag-neutral", who: "Sam O.", initials: "SO", notes: 0, files: 0 }
+      ]},
+      { name: "Launch & handover", count: 4, range: "Sep 7 – Sep 18", rows: [
+        { task: "Asset pack to Northwind brand team", dates: "Sep 7 – Sep 9", prio: "High", prioClass: "tag-accent-2", label: "Not started", labelClass: "tag-neutral", who: "Dana W.", initials: "DW", notes: 1, files: 0 },
+        { task: "Launch-day comms checklist", dates: "Sep 9 – Sep 11", prio: "Medium", prioClass: "tag-neutral", label: "Not started", labelClass: "tag-neutral", who: "Mira K.", initials: "MK", notes: 0, files: 0 },
+        { task: "Post-campaign report shell", dates: "Sep 14 – Sep 18", prio: "Low", prioClass: "tag-neutral", label: "Not started", labelClass: "tag-neutral", who: "Rae L.", initials: "RL", notes: 0, files: 0 }
+      ]}
+    ];
+
+    const relabel = (names) => byCampaign.map((g, i) => ({ ...g, name: names[i] }));
+    const groups =
+      grouping === "Client" ? relabel(["Northwind Foods", "Halden Rail", "Meridian Health"])
+      : grouping === "Status" ? relabel(["Working on it", "In review", "Blocked"])
+      : byCampaign;
+
+    return {
+      brand,
+      groupByLabel: "Group: " + grouping,
+      groups,
+      spaces: [
+        { name: "Creative Studio" }, { name: "Client Services" },
+        { name: "Production Ops" }, { name: "Studio Requests" }
+      ],
+      thread: [
+        { who: "Dana W.", when: "2h", initials: "DW", body: "Client flagged the 00:18 transition. v3 uploaded with the new grade — @Mira can you sign off before 5?" },
+        { who: "Mira K.", when: "1h", initials: "MK", body: "Looks right. Holding sign-off until the audio mix lands." },
+        { who: "Northwind (guest)", when: "24m", initials: "NW", body: "Legal cleared the end card copy. Go ahead." }
+      ],
+      columns: [
+        { name: "Intake", count: 3, cards: [
+          { title: "Retail window POS request", label: "Request", labelClass: "tag-neutral", due: "Sep 2", notes: 1, files: 0, initials: "DW" },
+          { title: "Halden Rail — Q4 brief", label: "Request", labelClass: "tag-neutral", due: "Sep 5", notes: 0, files: 2, initials: "SO" },
+          { title: "Trade show banner set", label: "Request", labelClass: "tag-neutral", due: "Sep 9", notes: 2, files: 0, initials: "RL" }
+        ]},
+        { name: "Working", count: 4, cards: [
+          { title: "Stills retouch — 40 selects", label: "Creative", labelClass: "tag-accent", due: "Aug 26", notes: 3, files: 8, initials: "RL" },
+          { title: "OOH artwork — 48 sheet", label: "Creative", labelClass: "tag-accent", due: "Sep 1", notes: 5, files: 4, initials: "JP" },
+          { title: "Landing page copy", label: "Copy", labelClass: "tag-accent-2", due: "Aug 28", notes: 2, files: 1, initials: "MK" },
+          { title: "Email sequence — 3 sends", label: "Copy", labelClass: "tag-accent-2", due: "Sep 3", notes: 0, files: 0, initials: "SO" }
+        ]},
+        { name: "Internal review", count: 2, cards: [
+          { title: "Hero film — client cut v3", label: "Film", labelClass: "tag-accent", flag: "Critical", due: "Aug 29", notes: 12, files: 5, initials: "MK" },
+          { title: "Packaging mock photography", label: "Creative", labelClass: "tag-accent", due: "Aug 30", notes: 4, files: 6, initials: "RL" }
+        ]},
+        { name: "Client approval", count: 3, cards: [
+          { title: "Media plan v1", label: "Plan", labelClass: "tag-neutral", flag: "Guest", due: "Aug 27", notes: 6, files: 3, initials: "SO" },
+          { title: "Print spec sign-off", label: "Ops", labelClass: "tag-neutral", flag: "Blocked", due: "Sep 2", notes: 7, files: 1, initials: "DW" },
+          { title: "End card legal copy", label: "Copy", labelClass: "tag-accent-2", due: "Aug 25", notes: 3, files: 1, initials: "JP" }
+        ]},
+        { name: "Shipped", count: 3, cards: [
+          { title: "Territory deck — three routes", label: "Creative", labelClass: "tag-accent", due: "Aug 7", notes: 4, files: 2, initials: "JP" },
+          { title: "Tone of voice guardrails", label: "Copy", labelClass: "tag-accent-2", due: "Aug 12", notes: 2, files: 0, initials: "RL" },
+          { title: "Shoot call sheets", label: "Ops", labelClass: "tag-neutral", due: "Aug 17", notes: 1, files: 3, initials: "DW" }
+        ]}
+      ],
+      days: this.buildDays(),
+      metrics: [
+        { k: "Assigned to me", v: "11", sub: "3 due this week" },
+        { k: "Awaiting client", v: "4", sub: "2 overdue by 1 day" },
+        { k: "Blocked", v: "2", sub: "print spec, audio mix" },
+        { k: "Shipped in August", v: "23", sub: "+6 vs July" }
+      ],
+      mine: [
+        { task: "Hero film — client cut v3", board: "Q3 Launch — Northwind", label: "In review", labelClass: "tag-accent", due: "Today" },
+        { task: "Sign off audio mix", board: "Q3 Launch — Northwind", label: "Working", labelClass: "tag-accent", due: "Today" },
+        { task: "Landing page copy", board: "Northwind Web", label: "Working", labelClass: "tag-accent", due: "Tomorrow" },
+        { task: "Approve OOH artwork", board: "Q3 Launch — Northwind", label: "Blocked", labelClass: "tag-outline", due: "Wed" },
+        { task: "Halden Rail Q4 kickoff agenda", board: "Client Services", label: "Not started", labelClass: "tag-neutral", due: "Thu" },
+        { task: "Studio capacity review", board: "Production Ops", label: "Not started", labelClass: "tag-neutral", due: "Fri" }
+      ],
+      workload: [
+        { who: "Mira Kovac", initials: "MK", pct: "88%", hours: "35 / 40h" },
+        { who: "Rae Lindqvist", initials: "RL", pct: "104%", hours: "42 / 40h" },
+        { who: "Jonas Pratt", initials: "JP", pct: "62%", hours: "25 / 40h" },
+        { who: "Dana Whitfield", initials: "DW", pct: "45%", hours: "18 / 40h" },
+        { who: "Sam Oyelaran", initials: "SO", pct: "78%", hours: "31 / 40h" }
+      ],
+      inbox: [
+        { who: "Northwind (guest)", initials: "NW", when: "24m", body: "Legal cleared the end card copy. Go ahead.", where: "Hero film — client cut v3" },
+        { who: "Dana Whitfield", initials: "DW", when: "2h", body: "@Mira v3 uploaded with the new grade — sign off before 5?", where: "Hero film — client cut v3" },
+        { who: "Rae Lindqvist", initials: "RL", when: "3h", body: "Added 8 retouched selects to the shared drive.", where: "Stills retouch — 40 selects" },
+        { who: "Vendor — Kessel Print", initials: "KP", when: "5h", body: "Spec sheet needs the bleed confirmed before Friday.", where: "Print spec sign-off" },
+        { who: "Jonas Pratt", initials: "JP", when: "Yesterday", body: "48 sheet layouts are in — flagged two crops for you.", where: "OOH artwork — 48 sheet" },
+        { who: "Sam Oyelaran", initials: "SO", when: "Yesterday", body: "Media plan v1 shared with the client workspace.", where: "Media plan v1" }
+      ]
+    };
+  }
+
+  buildDays() {
+    const ev = {
+      3: ["Concepting kickoff"], 5: ["Route review"], 7: ["Territory deck due"],
+      11: ["Script final pass"], 12: ["ToV guardrails"], 14: ["Media plan v1"],
+      17: ["Shoot day 1", "Call sheets"], 18: ["Shoot day 2"], 19: ["Retouch starts"],
+      21: ["OOH artwork"], 24: ["Studio review"], 25: ["End card copy"],
+      26: ["Selects due"], 27: ["Client approval"], 29: ["Hero cut v3 due"],
+      31: ["Print spec"]
+    };
+    const days = [];
+    for (let i = -4; i <= 32; i++) {
+      const inMonth = i >= 1 && i <= 31;
+      days.push({ n: inMonth ? String(i) : "", events: inMonth && ev[i] ? ev[i] : [] });
+    }
+    return days.slice(0, 35);
+  }
+}
+</script>
+</body>
+</html>
