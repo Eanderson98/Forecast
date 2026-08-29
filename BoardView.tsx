@@ -1,7 +1,8 @@
 import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { countActiveFilters, filterByAssignees, filterByFilters, filterTasks, groupsWithEveryAssignee, groupTasks, subtasksByParent, topLevelTasks } from '../../selectors';
 import { MAX_COLUMN_WIDTH, MIN_COLUMN_WIDTH, useForecastStore } from '../../store';
-import type { CustomColumnDef, Status, Task, TableColumnKey } from '../../types';
+import type { Status, Task } from '../../types';
+import { columnMeta } from '../../utils/columns';
 import { cx } from '../../utils/cx';
 import { ContextMenu } from '../shared/ContextMenu';
 import { EditableTitle } from '../shared/EditableTitle';
@@ -11,28 +12,6 @@ import { NewColumnButton } from './NewColumnButton';
 import { TaskRow } from './TaskRow';
 
 const NO_KNOWN_GROUPS: string[] = [];
-
-const COLUMN_META: Record<TableColumnKey, { label: string; align?: 'right' }> = {
-  timeline: { label: 'Timeline' },
-  dueDate: { label: 'Due date' },
-  priority: { label: 'Priority' },
-  label: { label: 'Status' },
-  category: { label: 'Category' },
-  stage: { label: 'Stage' },
-  assigned: { label: 'Assigned' },
-  notes: { label: 'Notes', align: 'right' },
-};
-
-function columnMeta(
-  key: string,
-  customColumns: CustomColumnDef[],
-  labelOverrides: Record<string, string>,
-): { label: string; align?: 'right' } {
-  const builtIn = (COLUMN_META as Record<string, { label: string; align?: 'right' } | undefined>)[key];
-  if (builtIn) return { ...builtIn, label: labelOverrides[key] ?? builtIn.label };
-  const custom = customColumns.find((c) => c.id === key);
-  return { label: custom?.name ?? key };
-}
 
 /**
  * Drag handle sitting on the border between two columns — like Monday.com, dragging it

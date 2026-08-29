@@ -1,10 +1,12 @@
+import { useRef, useState } from 'react';
 import { useForecastStore } from '../../store';
 import type { Priority, Status } from '../../types';
 import { dueInfo, formatRange, formatRelative, formatShort } from '../../utils/dates';
 import { cx } from '../../utils/cx';
 import { priorityClass, statusClass } from '../../utils/style';
-import { assigneeSummary } from '../../utils/people';
-import { AssigneeMultiSelect, AvatarStack } from './AssigneeMultiSelect';
+import { peopleFor } from '../../utils/people';
+import { deleteUploadedFile, fileDownloadUrl, formatFileSize, iconForMime, uploadFile } from '../../utils/files';
+import { AssigneeMultiSelect } from './AssigneeMultiSelect';
 import { Avatar } from './Avatar';
 import { DatePicker } from './DatePicker';
 import { DateRangePicker } from './DateRangePicker';
@@ -33,6 +35,10 @@ export function TaskDetailPanel({
   const setComposerDraft = useForecastStore((s) => s.setComposerDraft);
   const postUpdate = useForecastStore((s) => s.postUpdate);
   const addFileToTask = useForecastStore((s) => s.addFileToTask);
+  const removeFileFromTask = useForecastStore((s) => s.removeFileFromTask);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const setTitle = useForecastStore((s) => s.setTitle);
   const setPriority = useForecastStore((s) => s.setPriority);
   const setStatus = useForecastStore((s) => s.setStatus);
@@ -47,7 +53,7 @@ export function TaskDetailPanel({
 
   if (!task || !selectedTaskId) {
     return (
-      <aside className={cx('task-panel', variant === 'drawer' && 'is-drawer')}>
+      <aside className={cx('task-panel', variant === 'drawer' && 'is-drawer', variant === 'docked' && 'is-empty')}>
         <div className="task-panel-empty">Select a task to see its files, updates, and details.</div>
       </aside>
     );
@@ -57,6 +63,37 @@ export function TaskDetailPanel({
   const thread = updates.filter((u) => u.taskId === task.id).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 
   const submit = () => postUpdate(task.id, composerDraft);
+
+  const uploadFiles = async (fileList: FileList | null) => {
+    if (!fileList || fileList.length === 0) return;
+    // Snapshot into a plain array before anything else: FileList stays live off the input
+    // element, and the caller resets input.value right after this is invoked (so the same
+    // file can be re-selected later) — which clears that live list mid-upload and silently
+    // drops every file after the first if we iterate the FileList itself.
+    const files = Array.from(fileList);
+    setUploadError(null);
+    setUploading(true);
+    try {
+      for (const file of files) {
+        const tile = await uploadFile(file);
+        addFileToTask(task.id, tile);
+      }
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Upload failed');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeFile = async (fileId: string) => {
+    setUploadError(null);
+    try {
+      await deleteUploadedFile(fileId);
+      removeFileFromTask(task.id, fileId);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Failed to delete file');
+    }
+  };
 
   return (
     <aside className={cx('task-panel', variant === 'drawer' && 'is-drawer')}>
@@ -152,17 +189,33 @@ export function TaskDetailPanel({
           )}
         />
 
-        <span className="task-panel-label">Assigned</span>
-        <AssigneeMultiSelect
-          value={task.assigneeIds}
-          onToggle={(id) => toggleAssignee(task.id, id)}
-          trigger={(onClick, isOpen) => (
-            <button type="button" className={cx('task-panel-assignee-trigger', isOpen && 'is-open')} onClick={onClick}>
-              <AvatarStack ids={task.assigneeIds} size={22} />
-              {assigneeSummary(task.assigneeIds)}
-            </button>
-          )}
-        />
+        <span className="task-panel-label is-top">Assigned</span>
+        <div className="task-panel-assignee-list">
+          {peopleFor(task.assigneeIds).map((p) => (
+            <div className="task-panel-assignee-row" key={p.id}>
+              <Avatar initials={p.initials} tone={p.tone} size={22} />
+              <span>{p.name}</span>
+              <button
+                type="button"
+                className="task-panel-assignee-remove"
+                onClick={() => toggleAssignee(task.id, p.id)}
+                aria-label={`Remove ${p.name}`}
+                title={`Remove ${p.name}`}
+              >
+                <i className="ph ph-x" />
+              </button>
+            </div>
+          ))}
+          <AssigneeMultiSelect
+            value={task.assigneeIds}
+            onToggle={(id) => toggleAssignee(task.id, id)}
+            trigger={(onClick, isOpen) => (
+              <button type="button" className={cx('task-panel-assignee-trigger', isOpen && 'is-open')} onClick={onClick}>
+                <i className="ph ph-plus" style={{ fontSize: 12 }} />Add person
+              </button>
+            )}
+          />
+        </div>
 
         <span className="task-panel-label">Est. hours</span>
         <input
@@ -182,14 +235,53 @@ export function TaskDetailPanel({
         <div className="task-panel-section-label">Files</div>
         <div className="task-panel-files">
           {files.map((f) => (
-            <div key={f.id} className="task-panel-file">
-              <i className={cx('ph', f.icon)} style={{ fontSize: 20 }} />
-            </div>
+            <a
+              key={f.id}
+              className="task-panel-file"
+              href={fileDownloadUrl(f.id)}
+              title={`${f.name} (${formatFileSize(f.size)})`}
+            >
+              <i className={cx('ph', iconForMime(f.mimeType))} style={{ fontSize: 20 }} />
+              <button
+                type="button"
+                className="task-panel-file-remove"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  removeFile(f.id);
+                }}
+                aria-label={`Remove ${f.name}`}
+                title={`Remove ${f.name}`}
+              >
+                <i className="ph ph-x" />
+              </button>
+            </a>
           ))}
-          <button type="button" className="task-panel-file-drop" onClick={() => addFileToTask(task.id)}>
-            Drop
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            style={{ display: 'none' }}
+            onChange={(e) => {
+              uploadFiles(e.target.files);
+              e.target.value = '';
+            }}
+          />
+          <button
+            type="button"
+            className={cx('task-panel-file-drop', uploading && 'is-uploading')}
+            onClick={() => fileInputRef.current?.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              uploadFiles(e.dataTransfer.files);
+            }}
+            disabled={uploading}
+          >
+            {uploading ? '…' : 'Drop'}
           </button>
         </div>
+        {uploadError && <div className="task-panel-file-error">{uploadError}</div>}
       </div>
 
       <div className="hr" />

@@ -32,8 +32,13 @@
 .board-group-count { font-size: 11px; color: color-mix(in srgb, var(--color-text) 45%, transparent); }
 .board-group-range { margin-left: auto; font-size: 11px; white-space: nowrap; color: color-mix(in srgb, var(--color-text) 45%, transparent); }
 
+/* width: max-content + min-width: 100% (not plain width: auto) so this actually grows to its
+ * real column-track width when there are enough columns to need scrolling. A plain grid
+ * container only *paints* its overflowing tracks past its own box in that case — fine for text,
+ * but .board-rows below relies on this same pair to size its box (and thus its background and
+ * rounded corners) correctly too, which paint-only overflow can't give it. */
 .board-colheads {
-  display: grid; align-items: center; gap: 0; padding: 0 10px;
+  display: grid; align-items: center; gap: 0; padding: 0 10px; width: max-content; min-width: 100%;
   font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
   color: color-mix(in srgb, var(--color-text) 50%, transparent);
 }
@@ -100,15 +105,25 @@
 }
 .board-custom-text-input:focus { outline: none; }
 
-/* overflow: clip (not hidden) — clips to the rounded corners without becoming a real scroll
- * container, so it can never pick up its own independent scrollLeft (e.g. from the browser's
- * native drag-and-drop autoscroll) and drift out of sync with the header row above it. */
-.board-rows { border-radius: 10px; background: var(--color-surface); box-shadow: var(--shadow-sm); overflow: clip; }
+/* No overflow: clip/hidden here (deliberately — see below): each row's grid can be wider than
+ * .board-rows itself once there are enough columns to need horizontal scrolling, and that extra
+ * width has to stay paintable so it can scroll into view via .board-table-scroll's scrollbar
+ * above. Clipping it here — as a previous fix did, to keep row backgrounds from squaring off
+ * past these rounded corners — silently discarded every column past the visible width instead,
+ * breaking the table whenever it needed to scroll. The first/last-child rules below get the
+ * rounded corners back without clipping anything. */
+.board-rows { border-radius: 10px; background: var(--color-surface); box-shadow: var(--shadow-sm); width: max-content; min-width: 100%; }
+.board-rows > .board-row:first-child { border-top-left-radius: 10px; border-top-right-radius: 10px; }
 .board-row {
+  /* width: max-content + min-width: 100% (see .board-colheads above and .board-rows' comment):
+   * without this, the row's own box — and so its border-bottom and hover/selected background —
+   * stayed capped at the visible width even after removing overflow: clip, so scrolling past
+   * that point showed grid content sitting on bare page background with no card behind it. */
   position: relative; display: grid; align-items: center; gap: 0; padding: 9px 10px;
+  width: max-content; min-width: 100%;
   border-bottom: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
   cursor: pointer; background: transparent; border-left: none; border-right: none; border-top: none;
-  width: 100%; text-align: left; font: inherit; color: inherit;
+  text-align: left; font: inherit; color: inherit;
   transition: padding 0.15s ease, opacity 0.15s ease;
 }
 .board-row:hover { background: color-mix(in srgb, var(--color-text) 4%, transparent); }
@@ -128,12 +143,25 @@
 .board-row.is-done .board-row-title { font-size: 12.5px; }
 .board-row.is-subtask { background: color-mix(in srgb, var(--color-text) 2%, transparent); }
 .board-row.is-subtask .board-row-title { font-size: 13px; }
-.board-row-task { display: flex; align-items: center; gap: 9px; min-width: 0; padding-right: 10px; }
+/* grid-row: 1 on this and .board-cell below: their gridColumn is computed from the live column
+ * order, but the DOM order of these cells in TaskRow.tsx is always fixed (title, timeline, due
+ * date, priority, ...), regardless of how columns have been dragged around. When a dragged
+ * column's DOM position ends up ahead of where its new gridColumn puts it (e.g. Assigned, which
+ * is near the end of the DOM, gets dragged in front of Due date), CSS grid's row auto-placement
+ * — which walks items in DOM order and never places one "behind" where a same-row predecessor
+ * already put its cursor — pushes that cell onto an auto-generated second row instead of leaving
+ * it in row 1, staggering the row's height and vertical alignment. Pinning every cell to row 1
+ * removes that ambiguity outright. */
+.board-row-task { display: flex; align-items: center; gap: 9px; min-width: 0; padding-right: 10px; grid-row: 1; }
 /** Every data cell after the title column gets this — a guaranteed minimum gap before the next
  * column starts, so a cell whose content fills its full width (a long name, a custom text value)
  * can never visually touch its neighbor the way it could when cells relied only on their inner
  * button's own padding, which is counteracted by an equal negative margin. */
-.board-cell { padding-right: 10px; min-width: 0; overflow: hidden; }
+/* overflow-x only (not overflow: hidden on both axes): text-overflow: ellipsis only needs the
+ * horizontal axis clipped, and clipping the vertical one too was cutting off the top sliver of
+ * ringed avatars' box-shadow halo in the assigned cell — the row is barely taller than a 24px
+ * avatar plus its ring, so there's almost no vertical margin to spare. */
+.board-cell { padding-right: 10px; min-width: 0; overflow-x: hidden; overflow-y: visible; grid-row: 1; }
 .board-row-caret-slot { width: 14px; flex: none; display: flex; align-items: center; justify-content: center; }
 .board-row-caret {
   background: none; border: none; padding: 0; cursor: pointer; font-size: 11px; flex: none;
@@ -189,7 +217,11 @@
   display: flex; align-items: center; gap: 9px; padding: 9px 10px; font-size: 13px;
   color: color-mix(in srgb, var(--color-text) 40%, transparent); background: none; border: none;
   cursor: pointer; width: 100%; text-align: left; font-family: var(--font-body);
+  /* Always the last child of .board-rows — rounds the bottom corners; also rounds the top ones
+   * when a group has no tasks yet and it's the only child. */
+  border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;
 }
+.board-add-row:first-child { border-top-left-radius: 10px; border-top-right-radius: 10px; }
 .board-add-row:hover { color: var(--color-accent); background: color-mix(in srgb, var(--color-text) 4%, transparent); }
 
 /* — task detail panel — */
@@ -199,6 +231,13 @@
 }
 .task-panel.is-drawer {
   position: fixed; top: 0; right: 0; height: 100%; box-shadow: var(--shadow-lg); z-index: 50;
+}
+/* The docked (Table view) panel is always mounted, even with nothing selected — permanently
+ * taxing the table's width for an empty placeholder. Below a width where that tax leaves the
+ * table with barely any room, drop the empty panel entirely; it comes back the moment a task is
+ * selected (that's an intentional, expected width tradeoff, unlike the empty state). */
+@media (max-width: 1000px) {
+  .task-panel.is-empty { display: none; }
 }
 .task-panel-empty { display: flex; align-items: center; justify-content: center; height: 100%; text-align: center; color: color-mix(in srgb, var(--color-text) 45%, transparent); font-size: 13px; padding: 24px; }
 .task-panel-head { display: flex; align-items: flex-start; gap: 10px; }
@@ -225,6 +264,20 @@
 .task-panel-delete:hover { color: var(--color-danger); }
 .task-panel-grid { display: grid; grid-template-columns: 78px 1fr; gap: 8px 10px; font-size: 13px; align-items: center; }
 .task-panel-label { color: color-mix(in srgb, var(--color-text) 50%, transparent); font-size: 12px; }
+/* .task-panel-grid centers every row's items by default, which looks right for its normal
+ * single-line rows; the Assigned row's value column is now a list that can run taller than one
+ * line, so its label opts out of that centering to stay pinned level with the first name instead
+ * of drifting toward the middle of however many people are listed. */
+.task-panel-label.is-top { align-self: start; margin-top: 3px; }
+.task-panel-assignee-list { display: flex; flex-direction: column; gap: 2px; }
+.task-panel-assignee-row { display: flex; align-items: center; gap: 8px; padding: 3px 6px; margin: -3px -6px; border-radius: 6px; }
+.task-panel-assignee-row:hover { background: color-mix(in srgb, var(--color-text) 6%, transparent); }
+.task-panel-assignee-remove {
+  margin-left: auto; opacity: 0; background: none; border: none; padding: 2px; border-radius: 4px; cursor: pointer;
+  color: color-mix(in srgb, var(--color-text) 45%, transparent); display: flex; font-size: 11px;
+}
+.task-panel-assignee-row:hover .task-panel-assignee-remove, .task-panel-assignee-remove:focus-visible { opacity: 1; }
+.task-panel-assignee-remove:hover { color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 14%, transparent); }
 .task-panel-date-trigger {
   background: none; border: none; padding: 3px 6px; margin: -3px -6px; border-radius: 6px;
   cursor: pointer; color: var(--color-text); font: inherit; text-align: left;
@@ -246,15 +299,26 @@
 .task-panel-section-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 50%, transparent); }
 .task-panel-files { display: flex; gap: 8px; flex-wrap: wrap; }
 .task-panel-file {
-  width: 84px; height: 60px; border-radius: 8px; background: var(--color-neutral-900); box-shadow: var(--shadow-sm);
+  position: relative; width: 84px; height: 60px; border-radius: 8px; background: var(--color-neutral-900); box-shadow: var(--shadow-sm);
   display: grid; place-items: center; color: color-mix(in srgb, var(--color-text) 40%, transparent); flex: none;
+  text-decoration: none; cursor: pointer;
 }
+.task-panel-file:hover { color: var(--color-accent); }
+.task-panel-file-remove {
+  position: absolute; top: 3px; right: 3px; opacity: 0; background: color-mix(in srgb, var(--color-bg) 70%, transparent);
+  border: none; padding: 2px; border-radius: 4px; cursor: pointer; color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  display: flex; font-size: 10px;
+}
+.task-panel-file:hover .task-panel-file-remove, .task-panel-file-remove:focus-visible { opacity: 1; }
+.task-panel-file-remove:hover { color: var(--color-danger); }
 .task-panel-file-drop {
   width: 84px; height: 60px; border-radius: 8px; border: 1px dashed var(--color-divider);
   display: grid; place-items: center; color: color-mix(in srgb, var(--color-text) 35%, transparent); font-size: 11px;
-  background: none; cursor: pointer; flex: none;
+  background: none; cursor: pointer; flex: none; font-family: inherit;
 }
 .task-panel-file-drop:hover { border-color: var(--color-accent); color: var(--color-accent); }
+.task-panel-file-drop.is-uploading { cursor: default; opacity: 0.6; }
+.task-panel-file-error { font-size: 12px; color: var(--color-danger); }
 .task-panel-description {
   width: 100%; resize: vertical; min-height: 60px; border-radius: 8px; border: 1px solid var(--color-divider);
   background: var(--color-neutral-900); color: var(--color-text); font: inherit; font-size: 13px; line-height: 1.45;

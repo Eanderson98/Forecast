@@ -23,6 +23,10 @@ export function AvatarStack({ ids, size = 24 }: { ids: string[]; size?: number }
  * a checkbox list of everyone, like the header's Person filter, but writing
  * back into a single task's assignees instead of filtering the board. Also lets
  * you add someone new to the roster right from the list.
+ *
+ * Assigned people are split into their own labeled group at the top (full name
+ * and avatar, one row each) so clicking the trigger always shows exactly who's
+ * on the task at a glance, rather than that being buried in the full roster.
  */
 export function AssigneeMultiSelect({
   value,
@@ -40,24 +44,39 @@ export function AssigneeMultiSelect({
   const [isOpen, setIsOpen] = useState(false);
   const anchorRef = useRef<HTMLDivElement>(null);
 
+  const assigned = people.filter((p) => value.includes(p.id));
+  const rest = people.filter((p) => !value.includes(p.id));
+
   return (
     <div className="popover-anchor" ref={anchorRef}>
       {trigger(() => setIsOpen((v) => !v), isOpen)}
       <AnchoredPopover anchorRef={anchorRef} open={isOpen} onClose={() => setIsOpen(false)} align={align}>
         <div className="assignee-picker-panel">
-          {people.map((p) => {
-            const checked = value.includes(p.id);
-            return (
-              <label className="person-filter-row" key={p.id}>
-                <input type="checkbox" checked={checked} onChange={() => onToggle(p.id)} />
-                <span className="person-filter-check" aria-hidden="true">
-                  {checked && <i className="ph ph-check" />}
-                </span>
-                <Avatar initials={p.initials} tone={p.tone} size={22} />
-                <span>{p.name}</span>
-              </label>
-            );
-          })}
+          {assigned.length > 0 && (
+            <>
+              <div className="person-filter-mode-label">Assigned ({assigned.length})</div>
+              {assigned.map((p) => (
+                <label className="person-filter-row" key={p.id}>
+                  <input type="checkbox" checked onChange={() => onToggle(p.id)} />
+                  <span className="person-filter-check" aria-hidden="true">
+                    <i className="ph ph-check" />
+                  </span>
+                  <Avatar initials={p.initials} tone={p.tone} size={22} />
+                  <span>{p.name}</span>
+                </label>
+              ))}
+              <div className="context-menu-divider" />
+              <div className="person-filter-mode-label">Add someone</div>
+            </>
+          )}
+          {rest.map((p) => (
+            <label className="person-filter-row" key={p.id}>
+              <input type="checkbox" checked={false} onChange={() => onToggle(p.id)} />
+              <span className="person-filter-check" aria-hidden="true" />
+              <Avatar initials={p.initials} tone={p.tone} size={22} />
+              <span>{p.name}</span>
+            </label>
+          ))}
           <div className="context-menu-divider" />
           <AddPersonRow onAdd={(name) => onToggle(addPerson(name))} />
         </div>

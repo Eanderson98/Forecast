@@ -21,6 +21,15 @@ function BoardsBody() {
 
 export default function App() {
   const view = useForecastStore((s) => s.view);
+  const hydrated = useForecastStore((s) => s.hydrated);
+
+  if (!hydrated) {
+    return (
+      <div style={{ display: 'grid', placeItems: 'center', height: '100vh', background: 'var(--color-bg)', color: 'var(--color-text)' }}>
+        Loading…
+      </div>
+    );
+  }
 
   return (
     <div className="app-shell">

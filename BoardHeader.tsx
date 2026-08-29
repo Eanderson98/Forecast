@@ -1,6 +1,7 @@
 import { useForecastStore } from '../../store';
 import type { BoardTab, Grouping } from '../../types';
 import { monthLabel } from '../../utils/dates';
+import { exportTableToXlsx } from '../../utils/exportTable';
 import { Avatar } from '../shared/Avatar';
 import { SelectMenu } from '../shared/SelectMenu';
 import { FilterButton } from './FilterButton';
@@ -113,7 +114,7 @@ export function BoardHeader() {
           </span>
         )}
 
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="toolbar-actions">
           {boardTab === 'Table' && (
             <>
               <FilterButton />
@@ -137,6 +138,9 @@ export function BoardHeader() {
                 title={grouping === 'Status' ? 'Switch to Campaign or Client grouping to add a new group' : undefined}
               >
                 <i className="ph ph-folder-plus cd-i" />New group
+              </button>
+              <button className="btn btn-secondary" type="button" onClick={exportTableToXlsx} title="Export the current table view to an Excel file">
+                <i className="ph ph-download-simple cd-i" />Export
               </button>
             </>
           )}

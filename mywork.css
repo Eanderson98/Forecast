@@ -1,6 +1,9 @@
 .mywork-body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0,1fr) 372px; overflow: hidden; }
 .mywork-main { padding: 18px 20px; display: flex; flex-direction: column; gap: 18px; min-width: 0; overflow-y: auto; }
-.mywork-metrics { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
+/* auto-fit + a real minimum lets these wrap to a 2x2 grid instead of squeezing all 4 into
+ * whatever's left next to the 372px-wide Updates panel, which made each tile too narrow to
+ * hold its label. */
+.mywork-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; }
 .mywork-metric-value { font-family: var(--font-heading); font-size: 30px; line-height: 1.05; }
 .mywork-metric-sub { font-size: 11px; color: color-mix(in srgb, var(--color-text) 50%, transparent); }
 
@@ -8,12 +11,17 @@
 .mywork-section-head { display: flex; align-items: center; gap: 10px; }
 .mywork-section-title { font-family: var(--font-heading); font-size: 16px; }
 
-.mywork-list { border-radius: 10px; background: var(--color-surface); box-shadow: var(--shadow-sm); overflow: hidden; }
+/* overflow-x: auto (not hidden) — a row's fixed-width columns (190+116+104px) can need more
+ * room than this list has, and overflow: hidden here would silently clip them with no way to
+ * reach them, the same failure the board table had (see board.css's .board-rows comment).
+ * overflow-y stays hidden since that's only ever needed to keep row backgrounds inside the
+ * rounded corners, not to hide anything. */
+.mywork-list { border-radius: 10px; background: var(--color-surface); box-shadow: var(--shadow-sm); overflow-x: auto; overflow-y: hidden; }
 .mywork-row {
   display: grid; grid-template-columns: minmax(0,1fr) 190px 116px 104px; align-items: center; gap: 0;
   padding: 10px 12px; border-bottom: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
   cursor: pointer; background: none; border-left: none; border-right: none; border-top: none;
-  width: 100%; text-align: left; font: inherit; color: inherit;
+  min-width: 100%; text-align: left; font: inherit; color: inherit;
 }
 .mywork-row:hover { background: color-mix(in srgb, var(--color-text) 4%, transparent); }
 .mywork-row-task { display: flex; align-items: center; gap: 9px; min-width: 0; }
@@ -23,8 +31,11 @@
 .mywork-row-due.is-overdue { color: var(--color-accent-2); }
 .mywork-empty { padding: 18px 12px; font-size: 13px; color: color-mix(in srgb, var(--color-text) 40%, transparent); }
 
-.workload-list { display: flex; flex-direction: column; gap: 9px; }
-.workload-row { display: grid; grid-template-columns: 186px minmax(0,1fr) 78px; align-items: center; gap: 12px; }
+/* overflow-x: auto for the same reason as .mywork-list above: its two fixed-width columns
+ * (186px + 78px) can exceed the available width, and without a scroll container of its own,
+ * that excess would silently paint past .mywork-main and get clipped away by .mywork-body. */
+.workload-list { display: flex; flex-direction: column; gap: 9px; overflow-x: auto; }
+.workload-row { display: grid; grid-template-columns: 186px minmax(0,1fr) 78px; align-items: center; gap: 12px; min-width: 100%; width: max-content; }
 .workload-who { display: flex; align-items: center; gap: 8px; }
 .workload-name { font-size: 13px; white-space: nowrap; }
 .workload-track { height: 10px; border-radius: 5px; background: color-mix(in srgb, var(--color-text) 8%, transparent); overflow: hidden; display: flex; }

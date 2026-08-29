@@ -1,15 +1,20 @@
 import { create } from 'zustand';
+import type { PersistedState } from './api';
 import { CLIENTS, CURRENT_USER_ID, DEFAULT_WORKSPACE_ID, PEOPLE, WORKSPACES, WORKSPACE_SEEDS } from './data';
 import type { AvatarTone, BoardTab, Client, CustomColumnDef, CustomColumnType, FilterDimension, Grouping, NavKey, Person, PersonFilterMode, Priority, Status, TableColumnKey, Task, TaskFilters, UpdateMessage, View, WorkBucket, Workspace } from './types';
 import { NOW, toISODate } from './utils/dates';
 
-interface FileTile {
+/** A real file attachment, uploaded to the server's own disk (see server/src/index.js) —
+ * `id` is what the /api/files/:id download/delete routes key off of. */
+export interface FileTile {
   id: string;
-  icon: string;
+  name: string;
+  size: number;
+  mimeType: string;
 }
 
 /** The per-workspace slice of state that gets swapped out wholesale when switching workspaces. */
-interface WorkspaceSnapshot {
+export interface WorkspaceSnapshot {
   tasks: Task[];
   updates: UpdateMessage[];
   filesByTask: Record<string, FileTile[]>;
@@ -90,7 +95,11 @@ interface ForecastState {
   customColumns: CustomColumnDef[];
   /** Display-name overrides for the built-in columns (Timeline, Due date, etc). Custom columns keep their own name on CustomColumnDef instead. */
   columnLabelOverrides: Record<string, string>;
+  /** False until the initial load from the server (or the "nothing saved yet" fallback) has resolved. */
+  hydrated: boolean;
 
+  /** Replaces local defaults with the shared server data on boot; passing null (nothing saved yet) just marks hydration done so the current defaults get pushed up on first save. */
+  hydrate: (data: PersistedState | null) => void;
   setWorkspace: (id: string) => void;
   renameWorkspace: (id: string, name: string) => void;
   addWorkspace: (name: string) => void;
@@ -145,7 +154,8 @@ interface ForecastState {
   setEstimatedHours: (id: string, hours: number | undefined) => void;
   setTaskDates: (id: string, start: string, end: string) => void;
   moveTaskStage: (id: string, stage: string) => void;
-  addFileToTask: (id: string) => void;
+  addFileToTask: (id: string, file: FileTile) => void;
+  removeFileFromTask: (taskId: string, fileId: string) => void;
   setComposerDraft: (v: string) => void;
   postUpdate: (taskId: string, body: string) => void;
   openNewTask: (prefill?: Partial<NewTaskDraft>) => void;
@@ -196,8 +206,6 @@ function writeDefaultTimelineGroup(workspaceId: string, id: string | null) {
     // localStorage unavailable (private mode, etc.) — the choice just won't survive a refresh.
   }
 }
-
-const FILE_ICONS: Record<string, string> = {};
 
 const INITIAL_FILES: Record<string, FileTile[]> = {};
 
@@ -357,10 +365,33 @@ function writeStringList(key: string, list: string[]) {
 
 let nextTaskNum = 100;
 let nextUpdateNum = 100;
-let nextFileNum = 1;
 let nextWorkspaceNum = 1;
 let nextPersonNum = 1;
 let nextClientNum = 1;
+
+/** Highest numeric suffix among ids matching `prefix<number>`, or the current counter if none do. */
+function maxSuffix(ids: string[], prefix: string, current: number): number {
+  let max = current;
+  for (const id of ids) {
+    if (!id.startsWith(prefix)) continue;
+    const n = Number(id.slice(prefix.length));
+    if (Number.isFinite(n) && n + 1 > max) max = n + 1;
+  }
+  return max;
+}
+
+/** Loaded data may already contain ids from earlier sessions — start the local id
+ * counters past the highest one seen, so newly created records never collide. */
+function bumpCountersFromPersistedData(data: PersistedState) {
+  const allTasks = Object.values(data.workspaceSnapshots).flatMap((ws) => ws.tasks);
+  const allUpdates = Object.values(data.workspaceSnapshots).flatMap((ws) => ws.updates);
+  nextTaskNum = maxSuffix(allTasks.map((t) => t.id), 't', nextTaskNum);
+  nextUpdateNum = maxSuffix(allUpdates.map((u) => u.id), 'u', nextUpdateNum);
+  nextWorkspaceNum = maxSuffix(data.workspaces.map((w) => w.id), 'workspace-', nextWorkspaceNum);
+  nextPersonNum = maxSuffix(data.people.map((p) => p.id), 'p', nextPersonNum);
+  nextClientNum = maxSuffix(data.clients.map((c) => c.id), 'client-', nextClientNum);
+  nextCustomColumnNum = maxSuffix(data.customColumns.map((c) => c.id), 'col', nextCustomColumnNum);
+}
 
 const PERSON_TONES: AvatarTone[] = ['accent', 'accent-2', 'neutral'];
 
@@ -440,6 +471,45 @@ export const useForecastStore = create<ForecastState>((set, get) => ({
   columnOrder: readColumnOrder(initialCustomColumns),
   customColumns: initialCustomColumns,
   columnLabelOverrides: readColumnLabelOverrides(),
+  hydrated: false,
+
+  hydrate: (data) => {
+    if (!data) {
+      set({ hydrated: true });
+      return;
+    }
+    bumpCountersFromPersistedData(data);
+    const activeWorkspaceId =
+      data.activeWorkspaceId && data.workspaceSnapshots[data.activeWorkspaceId]
+        ? data.activeWorkspaceId
+        : (data.workspaces[0]?.id ?? get().activeWorkspaceId);
+    const active = data.workspaceSnapshots[activeWorkspaceId];
+    set({
+      clients: data.clients,
+      workspaces: data.workspaces,
+      workspaceSnapshots: data.workspaceSnapshots,
+      activeWorkspaceId,
+      lastWorkspaceByClient: data.lastWorkspaceByClient,
+      people: data.people,
+      categoryGroups: data.categoryGroups,
+      stageGroups: data.stageGroups,
+      customColumns: data.customColumns,
+      columnOrder: data.columnOrder,
+      columnWidths: data.columnWidths,
+      columnLabelOverrides: data.columnLabelOverrides,
+      ...(active && {
+        tasks: active.tasks,
+        updates: active.updates,
+        filesByTask: active.filesByTask,
+        campaignGroups: active.campaignGroups,
+        clientGroups: active.clientGroups,
+        timelineGroupId: active.timelineGroupId,
+        savedDefaultTimelineGroup: active.savedDefaultTimelineGroup,
+      }),
+      selectedTaskId: null,
+      hydrated: true,
+    });
+  },
 
   setColumnWidths: (patch) =>
     set((s) => {
@@ -867,15 +937,17 @@ export const useForecastStore = create<ForecastState>((set, get) => ({
       };
     }),
 
-  addFileToTask: (id) =>
-    set((s) => {
-      const icon = FILE_ICONS[id] ?? (nextFileNum++ % 2 === 0 ? 'ph-image' : 'ph-file');
-      const tile: FileTile = { id: `f-${id}-${Date.now()}`, icon };
-      return {
-        filesByTask: { ...s.filesByTask, [id]: [...(s.filesByTask[id] ?? []), tile] },
-        tasks: s.tasks.map((t) => (t.id === id ? { ...t, filesCount: t.filesCount + 1 } : t)),
-      };
-    }),
+  addFileToTask: (id, file) =>
+    set((s) => ({
+      filesByTask: { ...s.filesByTask, [id]: [...(s.filesByTask[id] ?? []), file] },
+      tasks: s.tasks.map((t) => (t.id === id ? { ...t, filesCount: t.filesCount + 1 } : t)),
+    })),
+
+  removeFileFromTask: (taskId, fileId) =>
+    set((s) => ({
+      filesByTask: { ...s.filesByTask, [taskId]: (s.filesByTask[taskId] ?? []).filter((f) => f.id !== fileId) },
+      tasks: s.tasks.map((t) => (t.id === taskId ? { ...t, filesCount: Math.max(0, t.filesCount - 1) } : t)),
+    })),
 
   setComposerDraft: (composerDraft) => set({ composerDraft }),
 
@@ -985,3 +1057,32 @@ export const useForecastStore = create<ForecastState>((set, get) => ({
     set((s) => ({ calendarMonth: new Date(s.calendarMonth.getFullYear(), s.calendarMonth.getMonth() + 1, 1) })),
   calendarToday: () => set({ calendarMonth: new Date(NOW.getFullYear(), NOW.getMonth(), 1) }),
 }));
+
+/** The active workspace's live fields (tasks, updates, ...) are only mirrored into
+ * workspaceSnapshots when you switch away — fold them back in before persisting,
+ * otherwise whatever you're currently looking at wouldn't get saved. */
+export function buildPersistedState(s: ForecastState): PersistedState {
+  const activeSnapshot: WorkspaceSnapshot = {
+    tasks: s.tasks,
+    updates: s.updates,
+    filesByTask: s.filesByTask,
+    campaignGroups: s.campaignGroups,
+    clientGroups: s.clientGroups,
+    timelineGroupId: s.timelineGroupId,
+    savedDefaultTimelineGroup: s.savedDefaultTimelineGroup,
+  };
+  return {
+    clients: s.clients,
+    workspaces: s.workspaces,
+    workspaceSnapshots: { ...s.workspaceSnapshots, [s.activeWorkspaceId]: activeSnapshot },
+    activeWorkspaceId: s.activeWorkspaceId,
+    lastWorkspaceByClient: s.lastWorkspaceByClient,
+    people: s.people,
+    categoryGroups: s.categoryGroups,
+    stageGroups: s.stageGroups,
+    customColumns: s.customColumns,
+    columnOrder: s.columnOrder,
+    columnWidths: s.columnWidths,
+    columnLabelOverrides: s.columnLabelOverrides,
+  };
+}
