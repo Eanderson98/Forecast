@@ -1,13 +1,21 @@
-# Forecast server
+# Forecast
 
-Express API + Postgres persistence for the Forecast app (`../app/`). Routes:
+A work-management app (boards, table, kanban, calendar, timeline, people) built with React + TypeScript + Vite, backed by a small Express + Postgres server for persistence.
 
-- `GET /api/state` — returns the whole shared app state (or `null` if nothing's been saved yet)
-- `PUT /api/state` — replaces it
-- `POST /api/files` — uploads one task attachment (multipart, field name `file`) to this server's own disk (`UPLOADS_DIR`); returns `{ id, name, size, mimeType }`
-- `GET /api/files/:id` — downloads a previously uploaded file
-- `DELETE /api/files/:id` — deletes one
+## Layout
 
-It also serves the built frontend (`../app/dist` by default) as static files, so in production this one process is the whole app.
+```
+app/       the frontend (Vite + React + TypeScript) — see app/README.md
+server/    the API + Postgres persistence layer — see server/README.md
+docker-compose.yml   one-command self-hosting (builds app/, runs server/ + Postgres)
+```
 
-See `../app/README.md` for local dev, Docker Compose self-hosting, and environment variables.
+`app/src/main.tsx` is the frontend's entry point; `app/src/App.tsx` is the root component. Everything else in `app/src/` is organized by kind (`components/`, `styles/`, `utils/`) or is a single top-level module (`store.ts`, `types.ts`, `api.ts`, `persistence.ts`, `data.ts`, `selectors.ts`).
+
+## Quick start (self-hosting)
+
+```bash
+docker compose up --build
+```
+
+Then open **http://localhost:3001**. See `app/README.md` for local development without Docker, environment variables, and how persistence works.

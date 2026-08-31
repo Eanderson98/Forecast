@@ -1,0 +1,256 @@
+/* Nocturne component classes — ported from the design-system stylesheet,
+   trimmed to what Forecast actually uses. */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 400;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+button { font: inherit; color: inherit; }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+
+.text-muted { color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+
+/* — rules — */
+.hr {
+  height: 1px; border: 0; margin: 0;
+  background: linear-gradient(to right,
+    transparent, var(--color-divider) 48px,
+    var(--color-divider) calc(100% - 48px), transparent);
+}
+
+/* — buttons — */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  cursor: pointer; text-decoration: none;
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 14px; line-height: 1.2; color: var(--color-text);
+  background: transparent; border: 1px solid transparent;
+  padding: var(--space-2) calc(var(--space-3) * 1.2);
+  border-radius: var(--radius-md);
+}
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-primary { color: var(--color-accent); border-color: var(--color-accent); }
+.btn-primary:hover { background: color-mix(in srgb, var(--color-accent) 12%, transparent); }
+.btn-primary:active { background: color-mix(in srgb, var(--color-accent) 22%, transparent); }
+.btn-secondary { border-color: var(--color-divider); }
+.btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.btn-secondary:active { background: color-mix(in srgb, var(--color-text) 14%, transparent); }
+.btn-secondary.is-active { color: var(--color-accent); border-color: var(--color-accent); background: color-mix(in srgb, var(--color-accent) 12%, transparent); }
+.btn-ghost { color: var(--color-accent); padding-inline: var(--space-1); background: transparent; border: none; }
+.btn-ghost:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+
+/* — forms — */
+.field > label {
+  display: block; font-size: 12px; margin-bottom: 5px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+.input, select.input {
+  width: 100%; min-height: 36px; padding: 6px 10px; font: inherit;
+  font-size: 14px; color: var(--color-text); caret-color: var(--color-accent);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+}
+.input:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.input:focus-visible { border-color: var(--color-accent); outline-offset: 0; }
+textarea.input { min-height: 70px; resize: vertical; font-family: inherit; }
+
+.seg {
+  display: inline-flex; overflow: hidden;
+  border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+}
+.seg-opt {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 12px; font-size: 13px; cursor: pointer;
+  background: transparent; border: none; color: inherit;
+  font-family: var(--font-body);
+}
+.seg-opt + .seg-opt { border-left: 1px solid var(--color-divider); }
+.seg-opt.is-active { color: var(--color-accent); box-shadow: inset 0 0 0 1px var(--color-accent); }
+.seg-opt:not(.is-active):hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+
+/* — cards — */
+.card {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-surface);
+}
+.card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); }
+.elev-sm { box-shadow: var(--shadow-sm); }
+.elev-md { box-shadow: var(--shadow-md); }
+.elev-lg { box-shadow: var(--shadow-lg); }
+
+/* — tags — */
+.tag {
+  display: inline-flex; align-items: center; font-size: 11px;
+  letter-spacing: 0.02em; padding: 3px 10px; white-space: nowrap;
+  border-radius: calc(var(--radius-md) * 0.75);
+  border: none; background: none; font-family: inherit; cursor: default;
+}
+.tag-accent { background: var(--color-accent-800); color: var(--color-accent-100); }
+.tag-accent-2 { background: var(--color-accent-2-800); color: var(--color-accent-2-100); }
+.tag-neutral { background: var(--color-neutral-800); color: var(--color-neutral-100); }
+.tag-outline { border: 1px solid var(--color-accent); color: var(--color-accent); }
+.tag-btn { cursor: pointer; box-shadow: inset 0 0 0 1px transparent; }
+.tag-btn:hover, .tag-btn.is-open { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-text) 35%, transparent); }
+
+/* — context menu — */
+.context-menu {
+  position: fixed; z-index: 200; min-width: 220px; max-width: 280px;
+  background: var(--color-surface); border-radius: 10px; box-shadow: var(--shadow-lg);
+  padding: 6px; display: flex; flex-direction: column; gap: 1px;
+  max-height: min(70vh, 420px); overflow-y: auto;
+}
+/* Without this, flexbox shrinks these to fit max-height instead of scrolling once content overflows it. */
+.context-menu > * { flex-shrink: 0; }
+.context-menu-title {
+  font-size: 13px; font-family: var(--font-heading); padding: 6px 10px 8px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  border-bottom: 1px solid var(--color-divider); margin-bottom: 4px;
+}
+.context-menu-section-label {
+  font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 10px 4px;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+}
+.context-menu-item {
+  display: flex; align-items: center; gap: 8px; text-align: left; font-size: 13px; padding: 7px 10px;
+  border-radius: 7px; background: none; border: none; cursor: pointer; color: var(--color-text); font-family: var(--font-body);
+  width: 100%;
+}
+.context-menu-item:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.context-menu-item.is-danger { color: var(--color-danger); }
+.context-menu-item.is-danger .context-menu-check { color: var(--color-danger); }
+.context-menu-item.is-danger:hover { background: color-mix(in srgb, var(--color-danger) 14%, transparent); }
+.context-menu-check {
+  width: 14px; height: 14px; flex: none; display: grid; place-items: center; font-size: 10px; color: var(--color-accent);
+}
+.context-menu-divider { height: 1px; background: var(--color-divider); margin: 4px 6px; }
+
+/* — select menu (standardized dropdown: same panel/item/check as the context menu) — */
+.select-menu-panel {
+  min-width: 180px; max-width: 260px;
+  background: var(--color-surface); border-radius: 10px; box-shadow: var(--shadow-lg);
+  padding: 6px; display: flex; flex-direction: column; gap: 1px;
+  max-height: min(60vh, 320px); overflow-y: auto;
+}
+.select-menu-panel > * { flex-shrink: 0; }
+.select-menu-row { display: flex; align-items: center; }
+.select-menu-row.has-delete .context-menu-item { flex: 1; min-width: 0; }
+.select-menu-row-delete {
+  flex: none; opacity: 0; background: none; border: none; padding: 6px; margin-left: 2px;
+  border-radius: 6px; cursor: pointer; color: color-mix(in srgb, var(--color-text) 50%, transparent); display: flex;
+}
+.select-menu-row:hover .select-menu-row-delete, .select-menu-row-delete:focus-visible { opacity: 1; }
+.select-menu-row-delete:hover { background: color-mix(in srgb, var(--color-danger) 14%, transparent); color: var(--color-danger); }
+.select-menu-row-delete:disabled { opacity: 0.25 !important; cursor: not-allowed; }
+
+/* — assignee multi-select (checkbox list, mirrors the Person filter panel) — */
+.assignee-picker-panel {
+  width: 220px; max-height: min(60vh, 320px); overflow-y: auto;
+  background: var(--color-surface); border-radius: 10px; box-shadow: var(--shadow-lg);
+  padding: 6px; display: flex; flex-direction: column; gap: 1px;
+}
+.assignee-picker-panel > * { flex-shrink: 0; }
+
+/* — add-person inline control (used in the assignee picker and Invite panel) — */
+.add-person-row {
+  display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 8px; cursor: pointer;
+  font-size: 13px; background: none; border: none; width: 100%; text-align: left; font-family: var(--font-body);
+  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+}
+.add-person-row:hover { background: color-mix(in srgb, var(--color-text) 6%, transparent); color: var(--color-text); }
+.add-person-icon {
+  width: 22px; height: 22px; border-radius: 50%; border: 1.5px dashed color-mix(in srgb, var(--color-text) 40%, transparent);
+  display: grid; place-items: center; font-size: 10px; flex: none;
+}
+.add-person-input {
+  width: 100%; background: var(--color-bg); border: 1px solid var(--color-accent); border-radius: 8px;
+  padding: 6px 8px; font: inherit; font-size: 13px; color: var(--color-text);
+}
+.add-person-input:focus { outline: none; }
+
+/* — anchored popover (portal) — */
+.anchored-popover { z-index: 300; }
+
+/* — date range / date picker — */
+.popover-anchor { display: inline-flex; min-width: 0; }
+.field > .popover-anchor { display: flex; width: 100%; }
+.input-date-trigger {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  cursor: pointer; text-align: left; width: 100%;
+}
+.input-date-trigger:hover, .input-date-trigger.is-open { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.input-date-trigger .cd-i { color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.range-cal {
+  width: 240px;
+  background: var(--color-surface); border-radius: 10px; box-shadow: var(--shadow-lg);
+  padding: 10px; display: flex; flex-direction: column; gap: 8px; cursor: default;
+}
+.range-cal-current { font-size: 12px; font-family: var(--font-heading); text-align: center; }
+.range-cal-header { display: flex; align-items: center; justify-content: space-between; }
+.range-cal-nav {
+  background: none; border: none; cursor: pointer; padding: 4px; border-radius: 6px; display: flex;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+}
+.range-cal-nav:hover { background: color-mix(in srgb, var(--color-text) 8%, transparent); }
+.range-cal-month { font-size: 13px; font-family: var(--font-heading); }
+.range-cal-weekdays, .range-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.range-cal-weekdays span {
+  font-size: 9px; text-align: center; text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 45%, transparent);
+}
+.range-cal-cell {
+  aspect-ratio: 1; display: grid; place-items: center; font-size: 12px; border-radius: 6px;
+  background: none; border: none; cursor: pointer; color: var(--color-text); font-family: var(--font-body);
+}
+.range-cal-cell:hover { background: color-mix(in srgb, var(--color-text) 10%, transparent); }
+.range-cal-cell.is-out { color: color-mix(in srgb, var(--color-text) 30%, transparent); }
+.range-cal-cell.is-in-range { background: color-mix(in srgb, var(--color-accent) 18%, transparent); border-radius: 0; }
+.range-cal-cell.is-endpoint { background: var(--color-accent); color: var(--color-bg); font-weight: 600; border-radius: 6px; }
+.range-cal-cell.is-pending { background: var(--color-accent); color: var(--color-bg); font-weight: 600; }
+.range-cal-hint { font-size: 11px; text-align: center; color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+
+/* — dialog — */
+.dialog-backdrop {
+  position: fixed; inset: 0; display: grid; place-items: center;
+  padding: var(--space-4); z-index: 100;
+  background: color-mix(in srgb, var(--color-neutral-900) 55%, transparent);
+}
+.dialog {
+  width: min(480px, 100%); display: flex; flex-direction: column; gap: var(--space-3);
+  padding: var(--space-4); border-radius: var(--radius-lg);
+  background: var(--color-surface); box-shadow: var(--shadow-lg);
+}
+.dialog-title {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 20px;
+}
+.dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
+
+/* — icon sizing (phosphor) — */
+.cd-i { font-size: 16px; line-height: 1; }
+
+/* — search — */
+.search-hit {
+  background: color-mix(in srgb, var(--color-accent) 45%, transparent);
+  color: var(--color-text);
+  border-radius: 3px;
+  padding: 0 1px;
+}
+
+/* — scrollbars, kept unobtrusive on dark ground — */
+* { scrollbar-width: thin; scrollbar-color: var(--color-neutral-700) transparent; }
